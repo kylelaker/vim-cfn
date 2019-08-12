@@ -54,16 +54,15 @@ function! DetectCfn(type)
         for strPoints in items(pointMap)
             if lineContents =~ strPoints[0]
                 let likely += strPoints[1]
+                if likely > pointsRequired
+                    if a:type =~ "yaml"
+                        set filetype=yaml.cloudformation
+                    elseif a:type =~ "json"
+                        set filetype=json.cloudformation
+                    endif
+                endif
             endif
         endfor
-
-        if likely > pointsRequired
-            if a:type =~ "yaml"
-                set filetype=yaml.cloudformation
-            elseif a:type =~ "json"
-                set filetype=json.cloudformation
-            endif
-        endif
     endfor
 endfunction
 
