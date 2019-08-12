@@ -1,6 +1,6 @@
 function! GetMatches(pattern, points)
     let l:matches = []
-    silent exe '%s/' . a:pattern . '/\=add[l:matches, submatch(0)]/gn'
+    silent exe '%s/' . a:pattern . '/\=add(l:matches, submatch(0))/gn'
     return len(l:matches) * a:points
 endfunction
 
