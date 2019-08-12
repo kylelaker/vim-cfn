@@ -1,10 +1,10 @@
-function! GetMatches[pattern, points]
+function! GetMatches(pattern, points)
     let l:matches = []
     silent exe '%s/' . a:pattern . '/\=add[l:matches, submatch(0)]/gn'
-    return len[l:matches] * a:points
+    return len(l:matches) * a:points
 endfunction
 
-function! SetFt[type]
+function! SetFt(type)
     if a:type =~ "json"
         set filetype=json.cloudformation
     else
@@ -12,7 +12,7 @@ function! SetFt[type]
     endif
 endfunction
 
-function! DetectCfn[type]
+function! DetectCfn(type)
     let l:likely = 0
     let l:pointsRequired = 10
 
@@ -64,18 +64,18 @@ function! DetectCfn[type]
         \['AWS::StackName', 4],
         \['AWS::URLSuffix', 4],
         \]
-    for strPoints in items[pointMap]
-        let l:points = GetMatches[strPoints[0], strPoints[1]]
+    for strPoints in items(pointMap)
+        let l:points = GetMatches(strPoints[0], strPoints[1])
         let l:likely += l:points
         if l:likely >= l:pointsRequired
-            call SetFt[a:type]
+            call SetFt(a:type)
             return
         endif
     endfor
 endfunction
 
 augroup filetypedetect
-    au BufRead,BufNewFile *.yaml,*.yml call DetectCfn['yaml']
-    au BufRead,BufNewFile *.json call DetectCfn['json']
+    au BufRead,BufNewFile *.yaml,*.yml call DetectCfn('yaml')
+    au BufRead,BufNewFile *.json call DetectCfn('json')
     au BufNewFile,BufRead *.template setfiletype yaml.cloudformation
 augroup END
