@@ -1,3 +1,17 @@
+function! GetMatches(pattern, points)
+    let l:matches = []
+    silent exe '%s/' . a:pattern . '/\=add(l:matches, submatch(0))/gn'
+    return len(l:matches) * points
+endfunction
+
+function! SetFt(type)
+    if a:type =~ "json"
+        set filetype=json.cloudformation
+    else
+        set filetype=yaml.cloudformation
+    endif
+endfunction
+
 function! DetectCfn(type)
     let likely = 0
     let pointsRequired = 10
@@ -50,19 +64,12 @@ function! DetectCfn(type)
         \'AWS::StackName': 4,
         \'AWS::URLSuffix': 4,
         \}
-    for lineContents in getline(1, line('$'))
-        for strPoints in items(pointMap)
-            if lineContents =~ strPoints[0]
-                let likely += strPoints[1]
-                if likely > pointsRequired
-                    if a:type =~ "yaml"
-                        set filetype=yaml.cloudformation
-                    elseif a:type =~ "json"
-                        set filetype=json.cloudformation
-                    endif
-                endif
-            endif
-        endfor
+    for strPoints in items(pointMap)
+        let l:points = GetMatches(strPoints[0], strPoints[1])
+        let l:likely += l:points
+        if l:likely >= l:pointsRequired
+            SetFt(a:type)
+        endif
     endfor
 endfunction
 
