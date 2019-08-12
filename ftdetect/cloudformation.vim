@@ -65,10 +65,11 @@ function! DetectCfn(type)
         \'AWS::URLSuffix': 4,
         \}
     for strPoints in items(pointMap)
-        let l:points = GetMatches(strPoints[0], strPoints[1])
+        let l:points = call GetMatches(strPoints[0], strPoints[1])
         let l:likely += l:points
         if l:likely >= l:pointsRequired
-            SetFt(a:type)
+            call SetFt(a:type)
+            return
         endif
     endfor
 endfunction
