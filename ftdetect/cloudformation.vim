@@ -13,8 +13,8 @@ function! SetFt(type)
 endfunction
 
 function! DetectCfn(type)
-    let likely = 0
-    let pointsRequired = 10
+    let l:likely = 0
+    let l:pointsRequired = 10
 
     " A mapping of all the important words in a CloudFormation template to the
     " number of points they're worth when detecting a file type. The values
