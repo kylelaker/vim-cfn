@@ -1,4 +1,4 @@
-function! GetMatches(pattern, points)
+function! GetPoints(pattern, points)
     let l:matches = []
     silent exe '%s/' . a:pattern . '/\=add(l:matches, submatch(0))/gn'
     return len(l:matches) * a:points
@@ -22,18 +22,19 @@ function! DetectCfn(type)
     " point, intrinsic functions are worth 2), and pseudo parameters are worth
     " 4. AWSTemplateFormatVersion is used as a sure sign its a Cfn template,
     " and AWS::\w+::\w+ is given 5 points since you're specifying resources
-    " using the CloudFormation name.
+    " using the CloudFormation name. A list of lists is used to preserve order
+    " which allows for getting the higher-point words first
     let pointMap = [
         \['AWSTemplateFormatVersion', 100],
         \['\vAWS::\w+::\w+', 5],
-        \['Description', 1],
-        \['Metadata', 1],
-        \['Parameters', 1],
-        \['Mappings', 1],
-        \['Conditions', 1],
-        \['Transform', 1],
-        \['Resources', 1],
-        \['Outputs', 1],
+        \['AWS::AccountId', 4],
+        \['AWS::NotificationARNs', 4],
+        \['AWS::NoValue', 4],
+        \['AWS::Partition', 4],
+        \['AWS::Region', 4],
+        \['AWS::StackId', 4],
+        \['AWS::StackName', 4],
+        \['AWS::URLSuffix', 4],
         \['Fn::Base64', 2],
         \['!Base64', 2],
         \['Fn::Cidr', 2],
@@ -55,18 +56,17 @@ function! DetectCfn(type)
         \['Fn::Transform', 2],
         \['!Transform', 2],
         \['!Ref', 2],
-        \['AWS::AccountId', 4],
-        \['AWS::NotificationARNs', 4],
-        \['AWS::NoValue', 4],
-        \['AWS::Partition', 4],
-        \['AWS::Region', 4],
-        \['AWS::StackId', 4],
-        \['AWS::StackName', 4],
-        \['AWS::URLSuffix', 4],
+        \['Description', 1],
+        \['Metadata', 1],
+        \['Parameters', 1],
+        \['Mappings', 1],
+        \['Conditions', 1],
+        \['Transform', 1],
+        \['Resources', 1],
+        \['Outputs', 1],
         \]
     for strPoints in pointMap
-        let l:points = GetMatches(strPoints[0], strPoints[1])
-        let l:likely += l:points
+        let l:likely += GetPoints(strPoints[0], strPoints[1])
         if l:likely >= l:pointsRequired
             call SetFt(a:type)
             return
