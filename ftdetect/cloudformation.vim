@@ -64,7 +64,7 @@ function! DetectCfn(type)
         \['AWS::StackName', 4],
         \['AWS::URLSuffix', 4],
         \]
-    for strPoints in items(pointMap)
+    for strPoints in pointMap
         let l:points = GetMatches(strPoints[0], strPoints[1])
         let l:likely += l:points
         if l:likely >= l:pointsRequired
